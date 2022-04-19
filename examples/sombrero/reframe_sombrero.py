@@ -7,6 +7,7 @@ import os.path as path
 import sys
 import reframe as rfm
 import reframe.utility.sanity as sn
+import reframe.utility.osext as osext
 
 # Add top-level directory to `sys.path` so we can easily import extra modules
 # from any directory.
@@ -27,6 +28,7 @@ from modules.utils import identify_build_environment
 # for more information about the API of ReFrame tests.
 @rfm.simple_test
 class SombreroBenchmark(rfm.RegressionTest):
+    compiler_version = variable(str, value='', loggable=True)
     # Systems and programming environments where to run this benchmark.  We
     # typically run them on all systems ('*'), unless there are particular
     # constraints.
@@ -110,6 +112,9 @@ class SombreroBenchmark(rfm.RegressionTest):
         # setting as is.
         self.build_system.environment = identify_build_environment(
             self.current_partition)
+        self.postrun_cmds = [f"$(spack -e {self.build_system.environment} "
+                             f"build-env {self.spack_spec} | "
+                             "grep -oP '^SPACK_CC=\K.*') --version"]
 
     # Function defining a sanity check.  See
     # https://reframe-hpc.readthedocs.io/en/stable/regression_test_api.html
@@ -130,3 +135,9 @@ class SombreroBenchmark(rfm.RegressionTest):
                 r'\[RESULT\]\[0\] Case 1 (\S+) Gflops/seconds',
                 self.stdout, 1, float),
         }
+
+
+    @run_after('run')
+    def get_compiler_version(self):
+        with osext.change_dir(self.stagedir):
+            self.compiler_version = sn.extractsingle(r'(.*(?:\((?:G|I)CC\)|version) .*)', self.stdout, 1).evaluate()
