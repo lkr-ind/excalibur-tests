@@ -7,9 +7,6 @@ spack:
   specs: []
   concretization: separately
   view: false
-  config:
-    install_tree:
-      root: opt/spack
   compilers:
   - compiler:
       spec: gcc@4.4.7

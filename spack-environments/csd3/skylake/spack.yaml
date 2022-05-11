@@ -10,9 +10,6 @@ spack:
   include:
   - ../compilers.yaml
   - ../packages.yaml
-  config:
-    install_tree:
-      root: opt/spack
   packages:
     all:
       target: [skylake_avx512]
