@@ -232,7 +232,8 @@ site_configuration = {
                         'ref=%(check_perf_ref)s '
                         '(l=%(check_perf_lower_thres)s, '
                         'u=%(check_perf_upper_thres)s)|'
-                        '%(check_perf_unit)s'
+                        '%(check_perf_unit)s|'
+                        '%(check_spack_spec)s'
                     ),
                     'append': True
                 }
